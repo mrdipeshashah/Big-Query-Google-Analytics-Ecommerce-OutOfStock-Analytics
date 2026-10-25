@@ -1,0 +1,55 @@
+WITH pdp_item_views AS (
+  SELECT
+    parse_date('%Y%m%d', event_date) AS event_date,
+    CONCAT(user_pseudo_id, '_', (SELECT value.int_value FROM UNNEST(event_params) WHERE key = 'ga_session_id')) AS session_id,
+    event_name,
+    
+    -- Item details
+    item.item_id,
+    item.item_name,
+    item.item_brand,
+    item.item_variant,
+    item.item_category,
+    
+    -- Stock status parameter
+    COALESCE(
+      (SELECT value.string_value FROM UNNEST(item.item_params) WHERE key = 'stockstatus'), 
+      'unknown'
+    ) AS stock_status
+
+  FROM
+    `your-project.analytics_123456789.events_*`
+  LEFT JOIN
+    UNNEST(items) AS item
+  WHERE
+    _TABLE_SUFFIX BETWEEN '20261018' AND '20261025'
+    AND event_name = 'view_item'  -- Strictly PDP Views
+)
+
+SELECT
+  event_date,
+  
+  -- Aligned Item Dimensions (matching Option A structure)
+  COALESCE(item_id, 'No PDP Viewed') AS item_id,
+  COALESCE(item_name, 'No PDP Viewed') AS item_name,
+  COALESCE(item_brand, 'No PDP Viewed') AS item_brand,
+  COALESCE(item_variant, 'No PDP Viewed') AS item_variant,
+  COALESCE(item_category, 'No PDP Viewed') AS item_category,
+  
+  -- Item Level Stock Status
+  stock_status,
+
+  -- SKU/Event Level Aggregated Metrics
+  COUNT(DISTINCT session_id) AS pdp_sessions,
+  COUNT(1) AS total_pdp_views
+
+FROM
+  pdp_item_views
+GROUP BY
+  event_date,
+  item_id,
+  item_name,
+  item_brand,
+  item_variant,
+  item_category,
+  stock_status;
