@@ -1,0 +1,89 @@
+WITH pdp_events AS (
+  SELECT
+    parse_date('%Y%m%d', event_date) AS event_date,
+    CONCAT(user_pseudo_id, '_', (SELECT value.int_value FROM UNNEST(event_params) WHERE key = 'ga_session_id')) AS session_id,
+    event_timestamp,
+    event_name,
+    event_value_in_usd,
+    
+    -- Traffic Source & Medium Dimensions
+    COALESCE(traffic_source.source, '(direct)') AS source,
+    COALESCE(traffic_source.medium, '(none)') AS medium,
+    COALESCE(traffic_source.name, '(not set)') AS campaign,
+    
+    -- Stock status parameter from items
+    COALESCE(
+      (SELECT value.string_value FROM UNNEST(item.item_params) WHERE key = 'stockstatus'), 
+      'unknown'
+    ) AS stock_status
+
+  FROM
+    `mrdipeshashah.analytics_343520795.events_*`
+  LEFT JOIN
+    UNNEST(items) AS item
+  WHERE
+    _TABLE_SUFFIX BETWEEN '20260801' AND '20261025'
+),
+
+session_behavior AS (
+  SELECT
+    event_date,
+    session_id,
+    
+    -- Capture first non-null source/medium/campaign per session
+    ARRAY_AGG(source IGNORE NULLS ORDER BY event_timestamp ASC LIMIT 1)[SAFE_OFFSET(0)] AS source,
+    ARRAY_AGG(medium IGNORE NULLS ORDER BY event_timestamp ASC LIMIT 1)[SAFE_OFFSET(0)] AS medium,
+    ARRAY_AGG(campaign IGNORE NULLS ORDER BY event_timestamp ASC LIMIT 1)[SAFE_OFFSET(0)] AS campaign,
+    
+    -- Session interaction flags
+    MAX(IF(event_name = 'view_item', 1, 0)) AS visited_pdp,
+    MAX(IF(event_name = 'view_item' AND stock_status != 'instock', 1, 0)) AS visited_oos_pdp,
+    MAX(IF(event_name = 'view_item' AND stock_status = 'instock', 1, 0)) AS visited_instock_pdp,
+    
+    -- Conversion metrics
+    MAX(IF(event_name = 'purchase', 1, 0)) AS made_purchase,
+    SUM(IF(event_name = 'purchase', COALESCE(event_value_in_usd, 0), 0)) AS session_revenue,
+    COUNT(IF(event_name = 'purchase', 1, NULL)) AS session_purchases
+
+  FROM
+    pdp_events
+  GROUP BY
+    event_date,
+    session_id
+)
+
+SELECT
+  event_date,
+  
+  -- Aligned Channel Dimensions
+  COALESCE(source, '(direct)') AS source,
+  COALESCE(medium, '(none)') AS medium,
+  CONCAT(COALESCE(source, '(direct)'), ' / ', COALESCE(medium, '(none)')) AS source_medium,
+  COALESCE(campaign, '(not set)') AS campaign,
+  
+  -- Session Classification
+  CASE 
+    WHEN visited_pdp = 0 THEN 'Non-PDP Session'
+    WHEN visited_oos_pdp = 1 AND made_purchase = 1 THEN 'OOS Recovered (Purchased)'
+    WHEN visited_oos_pdp = 1 AND made_purchase = 0 THEN 'OOS Abandoned (No Purchase)'
+    ELSE 'Pure In-Stock PDP Session'
+  END AS session_type,
+
+  -- Aggregated Metrics
+  COUNT(DISTINCT session_id) AS total_sessions,
+  SUM(visited_pdp) AS pdp_sessions,
+  SUM(visited_oos_pdp) AS oos_pdp_sessions,
+  SUM(visited_instock_pdp) AS instock_pdp_sessions,
+  SUM(made_purchase) AS purchasing_sessions,
+  SUM(session_purchases) AS total_purchases,
+  SUM(session_revenue) AS total_revenue
+
+FROM
+  session_behavior
+GROUP BY
+  event_date,
+  source,
+  medium,
+  source_medium,
+  campaign,
+  session_type;
