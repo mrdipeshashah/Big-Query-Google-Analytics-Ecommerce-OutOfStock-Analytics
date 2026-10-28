@@ -69,8 +69,6 @@ Below is the unified reference table for all custom calculated fields used acros
 | **Page 2** | **OOS PDP Views** | `SUM(CASE WHEN stock_status != 'instock' THEN total_pdp_views ELSE 0 END)` | Integer | Total product detail page (PDP) views spent on out-of-stock SKUs. | 
 | **Page 2** | **In-Stock PDP Views** | `SUM(CASE WHEN stock_status = 'instock' THEN total_pdp_views ELSE 0 END)` | Integer | Total PDP views spent on available in-stock SKUs. | 
 | **Page 2** | **OOS Share of Views (%)** | `SUM(CASE WHEN stock_status != 'instock' THEN total_pdp_views ELSE 0 END) / SUM(total_pdp_views)` | Percent | Percentage of total PDP page views exposed to stockouts. | 
-| **Page 2** | **OOS PDP Sessions** | `SUM(CASE WHEN stock_status != 'instock' THEN pdp_sessions ELSE 0 END)` | Integer | Distinct sessions exposed to out-of-stock SKUs. | 
-| **Page 2** | **OOS Session Share (%)** | `SUM(CASE WHEN stock_status != 'instock' THEN pdp_sessions ELSE 0 END) / SUM(pdp_sessions)` | Percent | Proportion of high-intent PDP sessions encountering unavailable inventory. | 
 | **Page 2** | **Views per Session Index** | `SUM(total_pdp_views) / SUM(pdp_sessions)` | Decimal | Average PDP page views per session (measures shopper browsing intensity and repeated friction). | 
 
 ---
