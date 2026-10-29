@@ -94,95 +94,65 @@ END
 
 ---
 
-## 4. Page 1 Architecture: Session-Level OOS Impact & Acquisition
+# 📊 E-commerce Out-of-Stock (OOS) Demand & Ghost Demand Calculator
 
-### Scorecard Banner (Overall Performance)
-* **Total Sessions:** `SUM(total_sessions)`
-* **PDP Sessions:** `SUM(pdp_sessions)` *(Sub-metric: `PDP Session Share (%)`)*
-* **OOS PDP Sessions:** `SUM(oos_pdp_sessions)` *(Sub-metric: `OOS PDP Exposure Rate (%)`)*
-* **Total Revenue:** `SUM(total_revenue)`
-* **OOS Recovery Rate:** `OOS Recovery Rate (%)`
-
-### Charts
-1. **SESSION JOURNEY DISTRIBUTION & STOCKOUT OUTCOMES**
-   * **Type:** Horizontal 100% Stacked Bar Chart
-   * **Dimension:** `event_date` (Granularity: `Year Month`)
-   * **Breakdown Dimension:** `session_type`
-   * **Metric:** `SUM(total_sessions)`
-   * **Style Note:** Y-axis labels set to Hidden to eliminate margin overflow.
-
-2. **INVENTORY FRICTION & OOS EXPOSURE TREND**
-   * **Type:** Dual-Line Time Series Chart
-   * **Dimension:** `event_date`
-   * **Metric 1 (Left Axis):** `OOS PDP Exposure Rate (%)`
-   * **Metric 2 (Right Axis):** `OOS Recovery Rate (%)`
-
-3. **OOS VOLUME v REVENUE RECOVERY TREND**
-   * **Type:** Dual-Axis Combo Chart (Column + Line)
-   * **Dimension:** `event_date`
-   * **Metric 1 (Left Axis / Columns):** `SUM(oos_pdp_sessions)`
-   * **Metric 2 (Right Axis / Line):** `OOS Recovered Revenue`
-
-### Data Tables
-1. **PRODUCTS IMPACTED BY STOCKOUTS: RECOVERY & LEAKAGE ANALYSIS**
-   * **Dimensions:** `item_name`, `session_type`
-   * **Metrics:** `SUM(total_sessions)`, `SUM(purchasing_sessions)`, `PDP CVR (%)`, `SUM(total_revenue)`
-   * **Sort:** `SUM(total_sessions)` DESC
-
-2. **ACQUISITION CHANNEL OOS FRICTION & LEAKAGE ANALYSIS**
-   * **Dimensions:** `Channel Grouping` (Primary), `source_medium` (Drill-down), `campaign` (Drill-down)
-   * **Metrics:**
-     1. `SUM(pdp_sessions)`
-     2. `SUM(oos_pdp_sessions)`
-     3. `Channel OOS Exposure Rate (%)`
-     4. `Channel OOS Abandonment Rate (%)`
-     5. `Channel OOS Recovery Rate (%)`
-     6. `OOS Recovered Revenue`
-   * **Sort:** `SUM(pdp_sessions)` DESC
+An interactive financial and operational supply chain calculator connecting GA4 front-end e-commerce session telemetry with back-end inventory planning.
 
 ---
 
-## 5. Page 2 Architecture: PDP Demand & Inventory Exposure
+## 📌 Overview & Core Purpose
 
-### Scorecard Banner (Overall Performance)
-* **Total PDP Views:** `SUM(total_pdp_views)`
-* **OOS PDP Views:** `OOS PDP Views` *(Sub-metric: `OOS Share of Views (%)`)*
-* **OOS PDP Sessions:** `OOS PDP Sessions` *(Sub-metric: `OOS Session Share (%)`)*
-* **PDP Views per Session:** `Views per Session Index`
+Traditional inventory management systems (ERP/WMS) only record completed sales transactions. When a high-demand SKU goes out of stock, sales drop to zero—causing forecasting algorithms to treat the stockout period as zero demand.
 
-### Visual Charts
-1. **DEMAND BREAKDOWN BY STOCK STATUS SPLIT BY ITEM CATEGORY**
-   * **Type:** Horizontal 100% Stacked Bar Chart
-   * **Dimension:** `item_category`
-   * **Breakdown Dimension:** `stock_status` (`instock`, `outofstock`, `onbackorder`)
-   * **Metric:** `SUM(total_pdp_views)`
+This Google Sheets model bridges **Merchandising Recovery (Point 1)** and **Supply Chain Optimization (Point 4)** by taking out-of-stock session telemetry from Looker Studio / BigQuery to:
+1. **Quantify Net Revenue Leakage (£):** Calculate actual revenue lost after accounting for cross-sell recoveries on substitute products.
+2. **Surface Uncaptured "Ghost Demand":** Convert unfulfilled PDP browsing velocity into an annualized demand baseline.
+3. **Correct Economic Order Quantity (EOQ):** Prevent under-purchasing on future purchase orders by factoring ghost demand into reorder calculations.
 
-2. **DAILY OOS PDP DEMAND TREND**
-   * **Type:** Time Series Line Chart
-   * **Dimension:** `event_date`
-   * **Metric 1 (Left Axis):** `Views per Session Index`
-   * **Metric 2 (Right Axis):** `OOS PDP Views`
+---
 
-3. **OOS PDP VIEWS v SESSION INDEX**
-   * **Type:** Time Series Line Chart
-   * **Dimension:** `event_date`
-   * **Metric 1 (Left Axis):** `OOS PDP Sessions`
-   * **Metric 2 (Right Axis):** `Views per Session Index`
+## 🎨 Color-Coding Architecture
 
-4. **CATEGORY STOCKOUT EXPOSURE & HIGH INTENT TRAFFIC IMPACT**
-   * **Type:** Dual-Axis Combo Chart (Stacked Column + Line)
-   * **Dimension:** `item_category`
-   * **Metric 1 (Left Axis / Column):** `OOS PDP Sessions`
-   * **Metric 2 (Left Axis / Column):** `In-Stock PDP Views`
-   * **Metric 3 (Right Axis / Line):** `OOS Share of Views (%)`
+To ensure operational clarity, the sheet uses strict visual segmentation:
+* 🟧 **Orange Headers (Columns B to I):** Raw inputs and parameters pulled directly from GA4/Looker Studio or supply chain master data.
+* 🟥 **Red Headers (Columns J to O):** Fully automated outputs calculated via dynamic spreadsheet formulas.
 
-### Data Table
-* **SKU LEVEL DEMAND & INVENTORY EXPOSURE RANKING**
-  * **Dimensions:** `item_name`
-  * **Metrics:**
-    1. `SUM(total_pdp_views)` *(PDP Views)*
-    2. `SUM(pdp_sessions)` *(PDP Sessions)*
-    3. `Views per Session Index`
-    4. `OOS PDP Views`
-    5. `OOS Share of Views (%)`
-  * **Sort:** `SUM(total_pdp_views)` DESC
+---
+
+## 📖 Parameter & Metric Glossary
+
+| Parameter / Metric Name | Type | Example Value | Spreadsheet Formula Logic | Description & Operational Detail |
+| :--- | :--- | :--- | :--- | :--- |
+| **SKU Name** | Input | Modern Leather Jacket | *Manual Text* | Primary product title or SKU identifier evaluated for out-of-stock performance. |
+| **Stockout Duration (Days)** | Input | 14 | *Manual Number* | Total consecutive calendar days the SKU had zero available warehouse inventory. |
+| **Total OOS PDP Sessions** | Input | 1,822 | *Manual Number* | High-intent customer sessions that loaded this specific SKU's out-of-stock product detail page (pulled from Looker Studio Page 2). |
+| **Baseline In-Stock CVR (%)** | Input | 3.50% | *Manual Percentage* | Historical conversion rate ($CVR$) achieved by this product during active in-stock periods. |
+| **Average Order Value (AOV)** | Input | £85.00 | *Manual Currency* | Average total cart revenue generated per completed transaction for this SKU/category. |
+| **OOS Recovery Rate (%)** | Input | 28.00% | *Manual Percentage* | Percentage of OOS sessions that converted on an alternative available product on the site (pulled from Looker Studio Page 1). |
+| **Ordering Cost per PO (S)** | Input | £150.00 | *Manual Currency* | Fixed administrative, freight setup, receiving, and processing cost per batch purchase order. |
+| **Annual Holding Cost per Unit (H)** | Input | £12.00 | *Manual Currency* | Annual warehouse storage, insurance, capital, and handling cost per unit held in inventory. |
+| **Gross Lost Demand (Units)** | Formula | 64 | `=Sessions * CVR` | Total unfulfilled unit demand calculated by multiplying OOS sessions by the baseline conversion rate. |
+| **Gross Lost Revenue (£)** | Formula | £5,420.45 | `=Gross_Lost_Units * AOV` | Total gross revenue opportunity exposed to the stockout before accounting for cross-sell recovery. |
+| **Recovered Revenue (£)** | Formula | £1,517.73 | `=Gross_Lost_Revenue * Recovery_Rate` | Revenue saved by redirecting OOS visitors to purchase alternative available products (**Point 1**). |
+| **Net Revenue Leakage (£)** | Formula | £3,902.72 | `=Gross_Lost_Revenue - Recovered_Revenue` | **True Net Loss:** Financial revenue permanently lost to customer bounce and abandonment. |
+| **Annualized Ghost Demand (Units)** | Formula | 1,663 | `=(Gross_Lost_Units / Duration_Days) * 365` | **Ghost Demand:** Annualized uncaptured unit demand baseline derived from stockout browsing velocity (**Point 4**). |
+| **Adjusted Reorder Quantity (EOQ)** | Formula | 204 | `=SQRT((2 * Ghost_Demand * S) / H)` | **Corrected EOQ:** Optimized batch reorder quantity balancing batch setup costs against holding costs to prevent repeat stockouts. |
+
+---
+
+## 🧮 Mathematical Proof & Step-by-Step Calculation
+
+Using the **Modern Leather Jacket** sample data ($1,822$ OOS Sessions over 14 days, $3.50\%$ CVR, $£85.00$ AOV, $28.00\%$ Recovery Rate, $S = £150.00$, $H = £12.00$):
+
+1. **Gross Lost Demand (Units):**
+   $$1,822 \text{ sessions} \times 0.035 = 63.77 \approx \mathbf{64 \text{ units}}$$
+2. **Gross Lost Revenue (£):**
+   $$63.77 \text{ units} \times £85.00 = \mathbf{£5,420.45}$$
+3. **Recovered Revenue (£):**
+   $$£5,420.45 \times 0.28 = \mathbf{£1,517.73}$$
+4. **Net Revenue Leakage (£):**
+   $$£5,420.45 - £1,517.73 = \mathbf{£3,902.72}$$
+5. **Annualized Ghost Demand (Units/Yr):**
+   $$\left(\frac{63.77 \text{ units}}{14 \text{ days}}\right) \times 365 = 1,662.64 \approx \mathbf{1,663 \text{ units/year}}$$
+6. **Adjusted Economic Order Quantity (EOQ):**
+   $$\text{EOQ} = \sqrt{\frac{2 \times 1,662.64 \times 150}{12}} = \sqrt{41,566} \approx \mathbf{204 \text{ units per batch}}$$
