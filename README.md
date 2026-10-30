@@ -77,7 +77,7 @@ An interactive financial and operational supply chain calculator connecting GA4 
 
 https://docs.google.com/spreadsheets/d/1oIqHRXCXIXxDzHKdiuGVGJUel8emKDrHZOlqBxhUtdQ/edit?usp=sharing
 
-## 📌 Overview & Core Purpose
+## Overview & Core Purpose
 
 Traditional inventory management systems (ERP/WMS) only record completed sales transactions. When a high-demand SKU goes out of stock, sales drop to zero—causing forecasting algorithms to treat the stockout period as zero demand.
 
