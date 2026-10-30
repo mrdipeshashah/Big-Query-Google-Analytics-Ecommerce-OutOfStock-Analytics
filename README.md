@@ -53,9 +53,9 @@ Below is the unified reference table for all custom calculated fields used acros
 | **Page 2** | **OOS Share of Views (%)** | `SUM(CASE WHEN stock_status != 'instock' THEN total_pdp_views ELSE 0 END) / SUM(total_pdp_views)` | Percent | Percentage of total PDP page views exposed to stockouts. | 
 | **Page 2** | **Views per Session Index** | `SUM(total_pdp_views) / SUM(pdp_sessions)` | Decimal | Average PDP page views per session (measures shopper browsing intensity and repeated friction). | 
 
-## DEFAULT CHANNEL GROUPING FIELD LOGIC
+## CHANNEL GROUPING FIELD LOGIC
 
-To classify traffic channels cleanly in Looker Studio without SQL pre-processing, create a custom field named **`Channel Grouping`** using the following formula:
+### DEFAULT CHANNEL GROUPING
 
 ```text
 CASE
@@ -67,6 +67,16 @@ CASE
   WHEN REGEXP_MATCH(source_medium, '(?i).* / organic') THEN 'Organic Search'
   WHEN REGEXP_MATCH(source_medium, '(?i).* / (email|newsletter)') THEN 'Email'
   WHEN REGEXP_MATCH(source_medium, '(?i).* / referral') THEN 'Referral'
+  ELSE 'Unassigned / Other'
+END
+```
+### PAID V NON PAID CHANNEL GROUPING
+
+```text
+CASE
+  WHEN REGEXP_MATCH(source_medium, '(?i)\\(direct\\) / \\(none\\)') THEN 'Direct'
+  WHEN REGEXP_MATCH(source_medium, '(?i).* / (cpc|ppc|paidsearch|paidsocial|paid_social|paidvideo|paid_video|display|cpm|banner)') THEN 'Paid Traffic'
+  WHEN REGEXP_MATCH(source_medium, '(?i).* / (organic|organicsocial|social|email|newsletter|referral)') THEN 'Non-Paid Traffic'
   ELSE 'Unassigned / Other'
 END
 ```
