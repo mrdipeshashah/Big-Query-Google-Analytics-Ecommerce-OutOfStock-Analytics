@@ -83,7 +83,7 @@ END
 
 # OUT-OF-STOCK (OOS) DEMAND & GHOST DEMAND CALCULATOR
 
-An interactive financial and operational supply chain calculator connecting GA4 front-end e-commerce session telemetry with back-end inventory planning.
+A financial and operational supply chain calculator connecting Google Analytics front-end e-commerce session telemetry with back-end inventory planning.
 
 https://docs.google.com/spreadsheets/d/1oIqHRXCXIXxDzHKdiuGVGJUel8emKDrHZOlqBxhUtdQ/edit?usp=sharing
 
@@ -91,7 +91,7 @@ https://docs.google.com/spreadsheets/d/1oIqHRXCXIXxDzHKdiuGVGJUel8emKDrHZOlqBxhU
 
 Traditional inventory management systems (ERP/WMS) only record completed sales transactions. When a high-demand SKU goes out of stock, sales drop to zero—causing forecasting algorithms to treat the stockout period as zero demand.
 
-This Google Sheets model bridges **Merchandising Recovery (Point 1)** and **Supply Chain Optimization (Point 4)** by taking out-of-stock session telemetry from Looker Studio / BigQuery to:
+The Google Sheets model bridges **Merchandising Recovery** and **Supply Chain Optimization** by taking out-of-stock session telemetry from Data Studio / BigQuery to:
 1. **Quantify Net Revenue Leakage (£):** Calculate actual revenue lost after accounting for cross-sell recoveries on substitute products.
 2. **Surface Uncaptured "Ghost Demand":** Convert unfulfilled PDP browsing velocity into an annualized demand baseline.
 3. **Correct Economic Order Quantity (EOQ):** Prevent under-purchasing on future purchase orders by factoring ghost demand into reorder calculations.
