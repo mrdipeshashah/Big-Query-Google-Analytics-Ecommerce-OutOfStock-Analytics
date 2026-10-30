@@ -1,38 +1,21 @@
-# GA4 & BigQuery Out-of-Stock (OOS) Analytics Dashboard — Looker Studio Master Documentation
+# OVERVIEW
 
-This document serves as the master technical reference for the **Looker Studio Out-of-Stock (OOS) Analytics Dashboard**. It details the underlying methodology, business logic, single-source channel groupings, and all calculated field definitions across both **Page 1: Session-Level OOS Impact & Acquisition Attribution** and **Page 2: PDP-Level Demand & SKU Exposure Analysis**.
+This repository contains Big Query code using Google Analytics raw data tracking, analysing, and surfacing insights on Out-of-Stock (OOS)
 
----
+# DASHBOARD
 
-## 1. Methodology & Strategic Context
+The data studio dashboard (https://datastudio.google.com/reporting/53cfbbc3-1b05-4e65-9a82-0577a19e4457) brings many of the insights to life.
 
-### 1.1 Objective & Executive Value
+## METHODOLOGY & STRATEGIC CONTEXT 
+
+### OBJECTIVE
 Standard e-commerce reporting tracks macro conversion rates and total site traffic but routinely obscures the hidden revenue leakages caused by inventory stockouts. When high-intent shoppers reach an out-of-stock (OOS) Product Detail Page (PDP), standard conversion metrics fail to isolate whether the user abandoned the session entirely or pivoted to purchase an alternative item.
 
-This dashboard quantifies inventory friction in two core dimensions:
+The dashboard quantifies inventory friction in two core dimensions:
 1. **Session-Level Funnel Impact & Revenue Leakage (Page 1):** Measures macro user behavior, identifying how out-of-stock PDP exposure impacts session outcomes (Abandoned vs. Recovered) and mapping these friction points directly back to paid/organic acquisition channels to prevent wasted ad spend.
 2. **PDP-Level Demand & SKU Inventory Friction (Page 2):** Isolates shopper demand intensity at the product and category level, measuring view rates, repeat browsing friction (`Views per Session Index`), and inventory exposure across stock states (`instock`, `outofstock`, `onbackorder`).
 
----
-
-### 1.2 Data Model Architecture & Granularity
-The dashboard is powered by two distinct underlying BigQuery aggregated datasets derived from raw GA4 event data:
-
-```
-[ GA4 Raw Event Stream ]
-           │
-           ├──► 1. Session-Level Aggregation (Page 1 Data Source)
-           │       • Granularity: Session + Date + Channel + Campaign + SKU Journey Outcome
-           │       • Primary Metrics: total_sessions, pdp_sessions, oos_pdp_sessions, total_revenue
-           │
-           └──► 2. Item/PDP-Level Aggregation (Page 2 Data Source)
-                   • Granularity: Item ID + Item Name + Item Category + Date + Stock Status
-                   • Primary Metrics: total_pdp_views, pdp_sessions, stock_status
-```
-
----
-
-### 1.3 Key Behavioral Definitions & Journey Taxonomy
+### KEY BEHAVIORAL DEFINITIONS & JOURNEY TAXONOMY
 To eliminate ambiguity across cross-functional teams (Merchandising, Performance Marketing, Operations), sessions and product views are classified using strict logical rules:
 
 * **Session Outcome Categories (`session_type`):**
@@ -46,9 +29,7 @@ To eliminate ambiguity across cross-functional teams (Merchandising, Performance
   * **OOS Recovery Rate (%):** The effectiveness of site cross-selling and alternative recommendations when stockouts occur (`OOS Recovered Sessions / Total OOS PDP Sessions`).
   * **Views per Session Index:** Indicates repeat view behavior on product pages (`SUM(total_pdp_views) / SUM(pdp_sessions)`). High values on out-of-stock items signal elevated customer frustration and unfulfilled demand.
 
----
-
-## 2. Master Calculated Fields Reference Table
+## MASTER CALCULATED FIELDS REFERENCE TABLE 
 
 Below is the unified reference table for all custom calculated fields used across both pages of the dashboard.
 
@@ -72,9 +53,7 @@ Below is the unified reference table for all custom calculated fields used acros
 | **Page 2** | **OOS Share of Views (%)** | `SUM(CASE WHEN stock_status != 'instock' THEN total_pdp_views ELSE 0 END) / SUM(total_pdp_views)` | Percent | Percentage of total PDP page views exposed to stockouts. | 
 | **Page 2** | **Views per Session Index** | `SUM(total_pdp_views) / SUM(pdp_sessions)` | Decimal | Average PDP page views per session (measures shopper browsing intensity and repeated friction). | 
 
----
-
-## 3. Default Channel Grouping Field Logic
+## DEFAULT CHANNEL GROUPING FIELD LOGIC
 
 To classify traffic channels cleanly in Looker Studio without SQL pre-processing, create a custom field named **`Channel Grouping`** using the following formula:
 
@@ -92,13 +71,11 @@ CASE
 END
 ```
 
----
-
-# 📊 E-commerce Out-of-Stock (OOS) Demand & Ghost Demand Calculator
+# OUT-OF-STOCK (OOS) DEMAND & GHOST DEMAND CALCULATOR
 
 An interactive financial and operational supply chain calculator connecting GA4 front-end e-commerce session telemetry with back-end inventory planning.
 
----
+https://docs.google.com/spreadsheets/d/1oIqHRXCXIXxDzHKdiuGVGJUel8emKDrHZOlqBxhUtdQ/edit?usp=sharing
 
 ## 📌 Overview & Core Purpose
 
@@ -109,50 +86,4 @@ This Google Sheets model bridges **Merchandising Recovery (Point 1)** and **Supp
 2. **Surface Uncaptured "Ghost Demand":** Convert unfulfilled PDP browsing velocity into an annualized demand baseline.
 3. **Correct Economic Order Quantity (EOQ):** Prevent under-purchasing on future purchase orders by factoring ghost demand into reorder calculations.
 
----
 
-## 🎨 Color-Coding Architecture
-
-To ensure operational clarity, the sheet uses strict visual segmentation:
-* 🟧 **Orange Headers (Columns B to I):** Raw inputs and parameters pulled directly from GA4/Looker Studio or supply chain master data.
-* 🟥 **Red Headers (Columns J to O):** Fully automated outputs calculated via dynamic spreadsheet formulas.
-
----
-
-## 📖 Parameter & Metric Glossary
-
-| Parameter / Metric Name | Type | Example Value | Spreadsheet Formula Logic | Description & Operational Detail |
-| :--- | :--- | :--- | :--- | :--- |
-| **SKU Name** | Input | Modern Leather Jacket | *Manual Text* | Primary product title or SKU identifier evaluated for out-of-stock performance. |
-| **Stockout Duration (Days)** | Input | 14 | *Manual Number* | Total consecutive calendar days the SKU had zero available warehouse inventory. |
-| **Total OOS PDP Sessions** | Input | 1,822 | *Manual Number* | High-intent customer sessions that loaded this specific SKU's out-of-stock product detail page (pulled from Looker Studio Page 2). |
-| **Baseline In-Stock CVR (%)** | Input | 3.50% | *Manual Percentage* | Historical conversion rate ($CVR$) achieved by this product during active in-stock periods. |
-| **Average Order Value (AOV)** | Input | £85.00 | *Manual Currency* | Average total cart revenue generated per completed transaction for this SKU/category. |
-| **OOS Recovery Rate (%)** | Input | 28.00% | *Manual Percentage* | Percentage of OOS sessions that converted on an alternative available product on the site (pulled from Looker Studio Page 1). |
-| **Ordering Cost per PO (S)** | Input | £150.00 | *Manual Currency* | Fixed administrative, freight setup, receiving, and processing cost per batch purchase order. |
-| **Annual Holding Cost per Unit (H)** | Input | £12.00 | *Manual Currency* | Annual warehouse storage, insurance, capital, and handling cost per unit held in inventory. |
-| **Gross Lost Demand (Units)** | Formula | 64 | `=Sessions * CVR` | Total unfulfilled unit demand calculated by multiplying OOS sessions by the baseline conversion rate. |
-| **Gross Lost Revenue (£)** | Formula | £5,420.45 | `=Gross_Lost_Units * AOV` | Total gross revenue opportunity exposed to the stockout before accounting for cross-sell recovery. |
-| **Recovered Revenue (£)** | Formula | £1,517.73 | `=Gross_Lost_Revenue * Recovery_Rate` | Revenue saved by redirecting OOS visitors to purchase alternative available products (**Point 1**). |
-| **Net Revenue Leakage (£)** | Formula | £3,902.72 | `=Gross_Lost_Revenue - Recovered_Revenue` | **True Net Loss:** Financial revenue permanently lost to customer bounce and abandonment. |
-| **Annualized Ghost Demand (Units)** | Formula | 1,663 | `=(Gross_Lost_Units / Duration_Days) * 365` | **Ghost Demand:** Annualized uncaptured unit demand baseline derived from stockout browsing velocity (**Point 4**). |
-| **Adjusted Reorder Quantity (EOQ)** | Formula | 204 | `=SQRT((2 * Ghost_Demand * S) / H)` | **Corrected EOQ:** Optimized batch reorder quantity balancing batch setup costs against holding costs to prevent repeat stockouts. |
-
----
-
-## 🧮 Mathematical Proof & Step-by-Step Calculation
-
-Using the **Modern Leather Jacket** sample data ($1,822$ OOS Sessions over 14 days, $3.50\%$ CVR, $£85.00$ AOV, $28.00\%$ Recovery Rate, $S = £150.00$, $H = £12.00$):
-
-1. **Gross Lost Demand (Units):**
-   $$1,822 \text{ sessions} \times 0.035 = 63.77 \approx \mathbf{64 \text{ units}}$$
-2. **Gross Lost Revenue (£):**
-   $$63.77 \text{ units} \times £85.00 = \mathbf{£5,420.45}$$
-3. **Recovered Revenue (£):**
-   $$£5,420.45 \times 0.28 = \mathbf{£1,517.73}$$
-4. **Net Revenue Leakage (£):**
-   $$£5,420.45 - £1,517.73 = \mathbf{£3,902.72}$$
-5. **Annualized Ghost Demand (Units/Yr):**
-   $$\left(\frac{63.77 \text{ units}}{14 \text{ days}}\right) \times 365 = 1,662.64 \approx \mathbf{1,663 \text{ units/year}}$$
-6. **Adjusted Economic Order Quantity (EOQ):**
-   $$\text{EOQ} = \sqrt{\frac{2 \times 1,662.64 \times 150}{12}} = \sqrt{41,566} \approx \mathbf{204 \text{ units per batch}}$$
