@@ -53,6 +53,23 @@ Below is the unified reference table for all custom calculated fields used acros
 | **Page 2** | **OOS Share of Views (%)** | `SUM(CASE WHEN stock_status != 'instock' THEN total_pdp_views ELSE 0 END) / SUM(total_pdp_views)` | Percent | Percentage of total PDP page views exposed to stockouts. | 
 | **Page 2** | **Views per Session Index** | `SUM(total_pdp_views) / SUM(pdp_sessions)` | Decimal | Average PDP page views per session (measures shopper browsing intensity and repeated friction). | 
 
+## KPI FRAMEWORK
+
+The core KPIs tracked provide strategic insights across four critical business dimensions: **Revenue**, **Efficiency**, **Diagnostic**, and **Friction**.
+
+| KPI Category | Metric Name | Metric Definition | Strategic Business Value | 
+| ----- | ----- | ----- | ----- | 
+| **Revenue** | **OOS Recovered Revenue (£)** | Revenue saved by customers who hit an OOS item but bought an alternative available SKU. | Quantifies total top-line financial value saved through automated on-site cross-sell recommendations (**Point 1**). | 
+| **Efficiency** | **OOS Recovery Rate (%)** | Conversion efficiency of shoppers encountering an OOS item. | Measures front-end merchandising and UX effectiveness at redirecting unfulfilled intent into completed orders. | 
+| **Diagnostic** | **OOS Revenue Share (%)** | Percentage of total site sales reliant on stockout cross-sell recoveries. | Diagnoses business risk exposure: indicates how dependent site revenue is on substitute products vs. primary inventory. | 
+| **Friction** | **OOS Exposure Rate (%)** | Proportion of product-browsing visits exposed to unavailable stock. | Highlights customer experience friction and supply chain stock availability breakdowns. | 
+
+### KEY KPI TAKEAWAYS
+
+* **Revenue vs. Efficiency:** `OOS Recovered Revenue` measures the absolute monetary value retained, `OOS Recovery Rate (%)` gauges the conversion ratio of that traffic. A low recovery rate indicates weak substitute recommendation algorithms or pricing mismatches on PDP pages.
+* **Diagnostic Risk:** If `OOS Revenue Share (%)` spikes too high, it indicates underlying inventory health issues where the store is forced to over-rely on fallback cross-sells rather than fulfilling primary product demand.
+* **Friction Monitoring:** `OOS Exposure Rate (%)` serves as the primary health metric for supply chain performance—high exposure directly correlates with higher customer abandonment and net revenue leakage.
+
 ## CHANNEL GROUPING FIELD LOGIC
 
 ### DEFAULT CHANNEL GROUPING
