@@ -16,7 +16,7 @@ The dashboard quantifies inventory friction in two core dimensions:
 2. **PDP-Level Demand & SKU Inventory Friction (Page 2):** Isolates shopper demand intensity at the product and category level, measuring view rates, repeat browsing friction (`Views per Session Index`), and inventory exposure across stock states (`instock`, `outofstock`, `onbackorder`).
 
 ### KEY BEHAVIORAL DEFINITIONS & JOURNEY TAXONOMY
-To eliminate ambiguity across cross-functional teams (Merchandising, Performance Marketing, Operations), sessions and product views are classified using strict logical rules:
+To eliminate ambiguity across cross-functional teams, sessions and product views are classified using strict logical rules:
 
 * **Session Outcome Categories (`session_type`):**
   * **Pure In-Stock PDP Session:** Sessions that viewed at least one PDP, where all viewed items were fully in-stock.
