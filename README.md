@@ -89,7 +89,7 @@ https://docs.google.com/spreadsheets/d/1oIqHRXCXIXxDzHKdiuGVGJUel8emKDrHZOlqBxhU
 
 ## Overview & Core Purpose
 
-Traditional inventory management systems (ERP/WMS) only record completed sales transactions. When a high-demand SKU goes out of stock, sales drop to zero—causing forecasting algorithms to treat the stockout period as zero demand.
+Traditional inventory management systems (ERP/WMS) record completed sales transactions. When a SKU goes out of stock, sales drop to zero—causing forecasting algorithms to treat the stockout period as zero demand.
 
 The Google Sheets model bridges **Merchandising Recovery** and **Supply Chain Optimization** by taking out-of-stock session telemetry from Data Studio / BigQuery to:
 1. **Quantify Net Revenue Leakage (£):** Calculate actual revenue lost after accounting for cross-sell recoveries on substitute products.
