@@ -156,6 +156,37 @@ To solve this, the framework models each SKU across two distinct, purpose-built 
   * **Session Input:** Uses live web telemetry captured by Looker Studio / GA4 while the item was out of stock (e.g., 1,822 organic/direct sessions).
   * **Recovery Rate Logic (28.00%):** Incorporates the live OOS recovery rate captured on-site (`28.00%`). It credits the site's recommendation engine for redirecting unfulfilled intent to substitute products (recovering £1,517.73).
   * **Operational Value:** Proves that actual net financial leakage was reduced to **£3,902.72**. It serves as a diagnostic metric for UX/merchandising teams to evaluate substitute page performance.
+ 
+ ### Looker Studio Telemetry Integration & Data Mapping Guide
+
+To populate the orange input columns in the Google Sheet (Columns E to H), use the live data rows from your **Looker Studio Dashboard Table** (`Products Impacted by Stockouts: Recovery & Leakage Analysis`):
+
+```
+Looker Studio Telemetry Table Data Example:
+Row 1: Sunset St Pauls Graphic Tee | Pure In-Stock PDP Session | 1,640 Sessions | 364 Purchasing | 22% CVR | £38,950
+Row 2: Sunset St Pauls Graphic Tee | OOS Abandoned (No Purchase)|   165 Sessions |   0 Purchasing |  0% CVR | £0
+Row 3: Sunset St Pauls Graphic Tee | OOS Recovered (Purchased)  |    64 Sessions |  64 Purchasing |100% CVR | £5,440
+```
+
+#### Step-by-Step Spreadsheet Field Mapping:
+
+1. **`Total OOS PDP Sessions` (Column E):**
+   * **Formula:** `OOS Abandoned Sessions (Row 2)` + `OOS Recovered Sessions (Row 3)`
+   * **Calculation Example:** £165 + 64 = = 229 Total OOS Sessions
+   * *Usage:* Inputs total web traffic exposed to the dead-end page into **Scenario B (Actual OOS)**.
+
+2. **`Baseline In-Stock CVR (%)` (Column F):**
+   * **Data Source:** Pull directly from `Pure In-Stock PDP Session` row (`PDP CVR (%)` column).
+   * **Value Example:** **`22.00%`** (from Row 1).
+   * *Usage:* Used across **both Scenario A and Scenario B** to convert OOS sessions into gross lost unit demand.
+
+3. **`OOS Recovery Rate (%)` (Column H):**
+   * **Formula:** `OOS Recovered Sessions (Row 3)` \ `Total OOS PDP Sessions (Step 1)`
+   * **Calculation Example:** £64 \ 229 = 27.95% = 28.00\%}
+   * *Usage:* 
+     * Entered as **`28.00%`** in **Scenario B** to measure net cross-sell revenue savings.
+     * Entered as **`0.00%`** in **Scenario A** to isolate pure gross demand exposure for purchasing.
+
 
 ### Summary Decision Matrix for Procurement & Merchandising
 
