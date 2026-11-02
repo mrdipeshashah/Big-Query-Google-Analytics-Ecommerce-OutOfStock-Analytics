@@ -113,4 +113,9 @@ The Google Sheets model bridges **Merchandising Recovery** and **Supply Chain Op
 2. **Surface Uncaptured "Ghost Demand":** Convert unfulfilled PDP browsing velocity into an annualized demand baseline.
 3. **Correct Economic Order Quantity (EOQ):** Prevent under-purchasing on future purchase orders by factoring ghost demand into reorder calculations.
 
+**Methodology Note on Traffic Mixing & Channel Strategy:**
+ 
+* **Traffic Channel Flexibility:** Column D (`Total OOS PDP Sessions`) and Column E (`Baseline In-Stock CVR`) are intentionally agnostic. For paid-led SKUs (e.g., 90% paid traffic), input total blended or paid sessions; for organic-led SKUs (e.g., 90% organic traffic), input organic sessions.
+* **Ad-Pause Rule:** If paid media campaigns (e.g., Google Shopping, Meta Ads) are automatically paused upon stockout, using pure organic sessions provides an unforced baseline demand floor. If paid ads are scheduled to reactivate immediately upon restock, using total blended sessions ensures your Economic Order Quantity (EOQ) reflects full operational demand.
+
 
