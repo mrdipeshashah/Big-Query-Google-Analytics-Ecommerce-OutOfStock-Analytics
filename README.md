@@ -118,4 +118,49 @@ The Google Sheets model bridges **Merchandising Recovery** and **Supply Chain Op
 * **Traffic Channel Flexibility:** Column D (`Total OOS PDP Sessions`) and Column E (`Baseline In-Stock CVR`) are intentionally agnostic. For paid-led SKUs (e.g., 90% paid traffic), input total blended or paid sessions; for organic-led SKUs (e.g., 90% organic traffic), input organic sessions.
 * **Ad-Pause Rule:** If paid media campaigns (e.g., Google Shopping, Meta Ads) are automatically paused upon stockout, using pure organic sessions provides an unforced baseline demand floor. If paid ads are scheduled to reactivate immediately upon restock, using total blended sessions ensures your Economic Order Quantity (EOQ) reflects full operational demand.
 
+## Dual-Scenario Framework: Pre-OOS Velocity vs. Actual OOS Telemetry
 
+When an e-commerce SKU hits zero inventory, automated ad rules (e.g., Google Shopping or Meta ad pauses) suppress incoming paid traffic. Relying solely on post-stockout web traffic creates a distorted picture of true product demand. 
+
+To solve this, the framework models each SKU across two distinct, purpose-built scenarios:
+
+```
+                     ┌─────────────────────────────────────────────────────────┐
+                     │              Dual-Scenario Demand Model                 │
+                     └────────────────────────────┬────────────────────────────┘
+                                                  │
+                ┌─────────────────────────────────┴─────────────────────────────────┐
+                ▼                                                                   ▼
+  1. Pre-OOS Velocity (Full Channel)                                 2. Actual OOS (Suppressed/Organic)
+  ──────────────────────────────────                                 ──────────────────────────────────
+  • Captures TOTAL unsuppressed demand                               • Captures UNFORCED organic demand
+  • Inputs: Pre-OOS session run-rate                                 • Inputs: Live OOS traffic & 28% recovery
+  • Recovery Rate: 0.00% (Gross Opportunity)                         • Recovery Rate: 28.00% (Telemetry)
+  • Focus: Sizing Purchase Orders (310 EOQ)                          • Focus: Measuring Net Leakage (£3.9K)
+```
+
+---
+
+### Scenario A: `Pre-OOS Velocity (Full Channel)`
+
+* **Primary Purpose:** **Supply Chain Reorder Sizing (EOQ) & Gross Opportunity Exposure**.
+* **How It Works:**
+  * **Session Input:** Extrapolates pre-stockout session velocity (combining paid search, paid social, organic, direct, and email) across the 14-day stockout window (e.g., 4,200 sessions).
+  * **Recovery Rate Logic (0.00%):** Set to `0.00%` to model total unmitigated demand exposure. Because paid campaigns were paused during stockout, setting recovery to zero aligns **Gross Lost Revenue** directly with **Net Revenue Leakage (£12,495.00)**.
+  * **Operational Value:** Procurement orders off the resulting **Annualized Ghost Demand (3,833 units)** to calculate an **Adjusted EOQ of 310 units**. This ensures that when restock arrives and paid marketing reactivates, inventory doesn't immediately sell out again.
+
+### Scenario B: `Actual OOS (Suppressed/Organic)`
+
+* **Primary Purpose:** **Merchandising Performance & Net Financial Leakage**.
+* **How It Works:**
+  * **Session Input:** Uses live web telemetry captured by Looker Studio / GA4 while the item was out of stock (e.g., 1,822 organic/direct sessions).
+  * **Recovery Rate Logic (28.00%):** Incorporates the live OOS recovery rate captured on-site (`28.00%`). It credits the site's recommendation engine for redirecting unfulfilled intent to substitute products (recovering £1,517.73).
+  * **Operational Value:** Proves that actual net financial leakage was reduced to **£3,902.72**. It serves as a diagnostic metric for UX/merchandising teams to evaluate substitute page performance.
+
+### Summary Decision Matrix for Procurement & Merchandising
+
+| Strategic Focus | Primary Metric to Watch | Scenario Row to Use | Key Decision |
+| :--- | :--- | :--- | :--- |
+| **Purchasing & Reordering** | **Adjusted EOQ (Units)** | **Pre-OOS Velocity** (Row 4) | Order **310 units per batch** to prevent instant stockout upon paid ad reactivation. |
+| **Financial Damage Control** | **Net Revenue Leakage (£)** | **Actual OOS** (Row 5) | Focus on **£3,902.72 net loss** after accounting for £1.5K in substitute cross-sell saves. |
+| **Merchandising Efficiency** | **OOS Recovery Rate (%)** | **Actual OOS** (Row 5) | Optimize substitute product modules on the PDP if recovery falls below the 28% baseline. |
