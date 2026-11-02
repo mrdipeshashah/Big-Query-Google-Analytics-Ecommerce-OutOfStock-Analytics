@@ -104,7 +104,7 @@ A financial and operational supply chain calculator connecting Google Analytics 
 
 https://docs.google.com/spreadsheets/d/1oIqHRXCXIXxDzHKdiuGVGJUel8emKDrHZOlqBxhUtdQ/edit?usp=sharing
 
-## Overview & Core Purpose
+## OVERVIEW 
 
 Traditional inventory management systems (ERP/WMS) record completed sales transactions. When a SKU goes out of stock, sales drop to zero—causing forecasting algorithms to treat the stockout period as zero demand.
 
