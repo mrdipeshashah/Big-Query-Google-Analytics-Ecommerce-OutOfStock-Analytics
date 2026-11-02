@@ -182,7 +182,7 @@ Row 3: Sunset St Pauls Graphic Tee | OOS Recovered (Purchased)  |    64 Sessions
 
 3. **`OOS Recovery Rate (%)` (Column H):**
    * **Formula:** `OOS Recovered Sessions (Row 3)` \ `Total OOS PDP Sessions (Step 1)`
-   * **Calculation Example:** £64 \ 229 = 27.95% = 28.00\%}
+   * **Calculation Example:** 64 \ 229 = 27.95% = 28.00%
    * *Usage:* 
      * Entered as **`28.00%`** in **Scenario B** to measure net cross-sell revenue savings.
      * Entered as **`0.00%`** in **Scenario A** to isolate pure gross demand exposure for purchasing.
