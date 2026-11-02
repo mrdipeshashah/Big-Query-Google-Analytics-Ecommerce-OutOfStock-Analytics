@@ -172,7 +172,7 @@ Row 3: Sunset St Pauls Graphic Tee | OOS Recovered (Purchased)  |    64 Sessions
 
 1. **`Total OOS PDP Sessions` (Column E):**
    * **Formula:** `OOS Abandoned Sessions (Row 2)` + `OOS Recovered Sessions (Row 3)`
-   * **Calculation Example:** £165 + 64 = 229 Total OOS Sessions
+   * **Calculation Example:** 165 + 64 = 229 Total OOS Sessions
    * *Usage:* Inputs total web traffic exposed to the dead-end page into **Scenario B (Actual OOS)**.
 
 2. **`Baseline In-Stock CVR (%)` (Column F):**
