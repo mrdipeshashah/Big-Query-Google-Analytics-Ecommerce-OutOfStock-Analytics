@@ -171,7 +171,7 @@ Line 3: Sunset St Pauls Graphic Tee | OOS Recovered (Purchased)  |    64 Session
 
 #### 1. Scenario Row Assignment: `Row 4 - Pre-OOS Velocity (Full Channel)`
 * **Target Spreadsheet Row:** **Row 4**
-* **Session Input (`Total OOS PDP Sessions` - Column E):** Input pre-stockout run-rate volume (e.g., 4,200 sessions extrapolated from full-channel in-stock velocity).
+* **Session Input (`Total OOS PDP Sessions` - Column E):** Input pre-stockout run-rate volume (e.g., 1,640 sessions extrapolated from full-channel in-stock velocity).
 * **`Baseline In-Stock CVR (%)` (Column F):** **`22.00%`** $\rightarrow$ Pulled from **Line 1** (`Pure In-Stock PDP Session` row $\rightarrow$ `PDP CVR (%)` column).
 * **`OOS Recovery Rate (%)` (Column H):** **`0.00%`** $\rightarrow$ Hardcoded to 0% to isolate gross opportunity exposure and reorder sizing (EOQ).
 
