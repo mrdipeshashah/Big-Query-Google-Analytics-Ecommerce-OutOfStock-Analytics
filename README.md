@@ -140,7 +140,7 @@ To solve this, the framework models each SKU across two distinct, purpose-built 
   • Focus: Sizing Purchase Orders (310 EOQ)                          • Focus: Measuring Net Leakage (£3.9K)
 ```
 
-### Scenario A: `Pre-OOS Velocity (Full Channel)` [Row 4 in Spreadsheet]
+### Scenario A: `Pre-OOS Velocity (Full Channel)` [Row 4 in Google Sheet]
 
 * **Primary Purpose:** **Supply Chain Reorder Sizing (EOQ) & Gross Opportunity Exposure**.
 * **How It Works:**
@@ -148,17 +148,17 @@ To solve this, the framework models each SKU across two distinct, purpose-built 
   * **Recovery Rate Logic (0.00%):** Set to `0.00%` to model total unmitigated demand exposure. Because paid campaigns were paused during stockout, setting recovery to zero aligns **Gross Lost Revenue** directly with **Net Revenue Leakage (£12,495.00)**.
   * **Operational Value:** Procurement orders off the resulting **Annualized Ghost Demand (3,833 units)** to calculate an **Adjusted EOQ of 310 units**. This ensures that when restock arrives and paid marketing reactivates, inventory doesn't immediately sell out again.
 
-### Scenario B: `Actual OOS (Suppressed/Organic)` [Row 5 in Spreadsheet]
+### Scenario B: `Actual OOS (Suppressed/Organic)` [Row 5 in Google Sheet]
 
 * **Primary Purpose:** **Merchandising Performance & Net Financial Leakage**.
 * **How It Works:**
-  * **Session Input:** Uses live web telemetry captured by Looker Studio / GA4 while the item was out of stock (e.g., 1,822 organic/direct sessions).
+  * **Session Input:** Uses live web telemetry captured by Data Studio / GA4 while the item was out of stock (e.g., 1,822 organic/direct sessions).
   * **Recovery Rate Logic (28.00%):** Incorporates the live OOS recovery rate captured on-site (`28.00%`). It credits the site's recommendation engine for redirecting unfulfilled intent to substitute products (recovering £1,517.73).
   * **Operational Value:** Proves that actual net financial leakage was reduced to **£3,902.72**. It serves as a diagnostic metric for UX/merchandising teams to evaluate substitute page performance.
 
 ### Data Studio Telemetry Integration & Field Mapping Guide
 
-To populate the orange input columns in your spreadsheet, map the three rows from your **Looker Studio Dashboard Table** (`Products Impacted by Stockouts: Recovery & Leakage Analysis`) directly into the respective spreadsheet scenario rows:
+To populate the orange input columns in your spreadsheet, map the three rows from your **Data Studio Dashboard Table** (`Products Impacted by Stockouts: Recovery & Leakage Analysis`) directly into the respective spreadsheet scenario rows:
 
 ```
 Looker Studio Table Data Reference:
@@ -171,14 +171,14 @@ Line 3: Sunset St Pauls Graphic Tee | OOS Recovered (Purchased)  |    64 Session
 
 #### 1. Scenario Row Assignment: `Row 4 - Pre-OOS Velocity (Full Channel)`
 * **Target Spreadsheet Row:** **Row 4**
-* **Session Input (`Total OOS PDP Sessions` - Column D):** Input pre-stockout run-rate volume (e.g., 4,200 sessions extrapolated from full-channel in-stock velocity).
-* **`Baseline In-Stock CVR (%)` (Column E):** **`22.00%`** $\rightarrow$ Pulled from **Line 1** (`Pure In-Stock PDP Session` row $\rightarrow$ `PDP CVR (%)` column).
+* **Session Input (`Total OOS PDP Sessions` - Column E):** Input pre-stockout run-rate volume (e.g., 4,200 sessions extrapolated from full-channel in-stock velocity).
+* **`Baseline In-Stock CVR (%)` (Column F):** **`22.00%`** $\rightarrow$ Pulled from **Line 1** (`Pure In-Stock PDP Session` row $\rightarrow$ `PDP CVR (%)` column).
 * **`OOS Recovery Rate (%)` (Column H):** **`0.00%`** $\rightarrow$ Hardcoded to 0% to isolate gross opportunity exposure and reorder sizing (EOQ).
 
 #### 2. Scenario Row Assignment: `Row 5 - Actual OOS (Suppressed/Organic)`
 * **Target Spreadsheet Row:** **Row 5**
-* **Session Input (`Total OOS PDP Sessions` - Column D):** **`229 Sessions`** $\rightarrow$ Calculated by adding **Line 2** (`165 OOS Abandoned`) + **Line 3** (`64 OOS Recovered`).
-* **`Baseline In-Stock CVR (%)` (Column E):** **`22.00%`** $\rightarrow$ Pulled from **Line 1** (`Pure In-Stock PDP Session` row $\rightarrow$ `PDP CVR (%)` column).
+* **Session Input (`Total OOS PDP Sessions` - Column E):** **`229 Sessions`** $\rightarrow$ Calculated by adding **Line 2** (`165 OOS Abandoned`) + **Line 3** (`64 OOS Recovered`).
+* **`Baseline In-Stock CVR (%)` (Column F):** **`22.00%`** $\rightarrow$ Pulled from **Line 1** (`Pure In-Stock PDP Session` row $\rightarrow$ `PDP CVR (%)` column).
 * **`OOS Recovery Rate (%)` (Column H):** **`28.00%`** $\rightarrow$ Calculated from telemetry: $\frac{\text{Line 3 Sessions (64)}}{\text{Line 2 + Line 3 Sessions (229)}} = 27.95\% \approx 28.00\%$.
 
 ### Summary Decision Matrix for Procurement & Merchandising
