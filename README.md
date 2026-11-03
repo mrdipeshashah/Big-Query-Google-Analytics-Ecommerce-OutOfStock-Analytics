@@ -120,8 +120,7 @@ The Google Sheets model bridges **Merchandising Recovery** and **Supply Chain Op
 
 ## Dual-Scenario Framework: Pre-OOS Velocity vs. Actual OOS Telemetry
 
-
-When an e-commerce SKU hits zero inventory, automated ad rules (e.g., Google Shopping or Meta ad pauses) suppress incoming paid traffic. Relying solely on post-stockout web traffic creates a distorted picture of true product demand.
+When an e-commerce SKU hits zero inventory, automated ad spend is cut and suppress paid traffic. Relying solely on post-stockout web traffic creates a distorted picture of true product demand.
 
 To solve this, the framework models each SKU across two distinct, purpose-built scenarios:
 
@@ -158,7 +157,7 @@ To solve this, the framework models each SKU across two distinct, purpose-built 
 
 ### Data Studio Telemetry Integration & Field Mapping Guide
 
-To populate the orange input columns in your spreadsheet, map the three rows from your **Data Studio Dashboard Table** (`Products Impacted by Stockouts: Recovery & Leakage Analysis`) directly into the respective spreadsheet scenario rows:
+To populate the orange input columns in your spreadsheet, map the three rows from your **Data Studio Dashboard Page 1** (`Products Impacted by Stockouts: Recovery & Leakage Analysis`) directly into the respective spreadsheet scenario rows:
 
 ```
 Looker Studio Table Data Reference:
@@ -171,7 +170,7 @@ Line 3: Sunset St Pauls Graphic Tee | OOS Recovered (Purchased)  |    64 Session
 
 #### 1. Scenario Row Assignment: `Row 4 - Pre-OOS Velocity (Full Channel)`
 * **Target Spreadsheet Row:** **Row 4**
-* **Session Input (`Total OOS PDP Sessions` - Column E):** **`1,640 Sessions`** $\rightarrow$ Calculated by adding **Line 1** (`1,640 Pure In-Stock`).
+* **Session Input (`Total OOS PDP Sessions` - Column E):** **`1,640 Sessions`** $\rightarrow$ Pulled from Line 1 (Pure In-Stock PDP Session) as the pre-stockout session run-rate across the equivalent stockout duration.
 * **`Baseline In-Stock CVR (%)` (Column F):** **`22.00%`** $\rightarrow$ Pulled from **Line 1** (`Pure In-Stock PDP Session` row $\rightarrow$ `PDP CVR (%)` column).
 * **`OOS Recovery Rate (%)` (Column H):** **`0.00%`** $\rightarrow$ Hardcoded to 0% to isolate gross opportunity exposure and reorder sizing (EOQ).
 
