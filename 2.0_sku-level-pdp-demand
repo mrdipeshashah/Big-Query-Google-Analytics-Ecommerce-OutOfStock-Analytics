@@ -18,7 +18,7 @@ WITH pdp_item_views AS (
     ) AS stock_status
 
   FROM
-    `your-project.analytics_123456789.events_*`
+    `enter.tablename_123456.events_*`
   LEFT JOIN
     UNNEST(items) AS item
   WHERE
